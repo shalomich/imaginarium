@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Imaginarium.Persistance.Entities
+namespace Imaginarium.Domain.Entities
 {
-    public class Nominee : Choice
+    public abstract class Entity
     {
-        public Association Association {set; get;}
+        public int Id {private set; get; }
     }
 }

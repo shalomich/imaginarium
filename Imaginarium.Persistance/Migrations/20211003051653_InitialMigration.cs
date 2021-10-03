@@ -7,6 +7,30 @@ namespace Imaginarium.Persistance.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "CardDeck",
+                columns: table => new
+                {
+                    CardsId = table.Column<int>(type: "int", nullable: false),
+                    DecksId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CardDeck", x => new { x.CardsId, x.DecksId });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CardHand",
+                columns: table => new
+                {
+                    CardsId = table.Column<int>(type: "int", nullable: false),
+                    HandsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CardHand", x => new { x.CardsId, x.HandsId });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Choice",
                 columns: table => new
                 {
@@ -71,9 +95,7 @@ namespace Imaginarium.Persistance.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CollectionId = table.Column<int>(type: "int", nullable: false),
-                    DeckId = table.Column<int>(type: "int", nullable: true),
-                    HandId = table.Column<int>(type: "int", nullable: true)
+                    CollectionId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -118,12 +140,13 @@ namespace Imaginarium.Persistance.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LobbyId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.UniqueConstraint("AK_Users_Name", x => x.Name);
                     table.ForeignKey(
                         name: "FK_Users_Lobbies_LobbyId",
                         column: x => x.LobbyId,
@@ -197,9 +220,9 @@ namespace Imaginarium.Persistance.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Score = table.Column<int>(type: "int", nullable: false),
                     IsPresenter = table.Column<bool>(type: "bit", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
                     GameId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -212,10 +235,10 @@ namespace Imaginarium.Persistance.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Gamers_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Gamers_Users_UserName",
+                        column: x => x.UserName,
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "Name",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -290,31 +313,31 @@ namespace Imaginarium.Persistance.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_CardDeck_DecksId",
+                table: "CardDeck",
+                column: "DecksId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CardHand_HandsId",
+                table: "CardHand",
+                column: "HandsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Cards_CollectionId",
                 table: "Cards",
                 column: "CollectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cards_DeckId",
-                table: "Cards",
-                column: "DeckId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Cards_HandId",
-                table: "Cards",
-                column: "HandId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Cards_Name_CollectionId",
                 table: "Cards",
                 columns: new[] { "Name", "CollectionId" },
-                unique: true);
+                unique: true,
+                filter: "[CollectionId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Choice_CardId_ElectionId",
                 table: "Choice",
-                columns: new[] { "CardId", "ElectionId" },
-                unique: true);
+                columns: new[] { "CardId", "ElectionId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Choice_ElectionId",
@@ -324,15 +347,12 @@ namespace Imaginarium.Persistance.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Choice_GamerId_ElectionId",
                 table: "Choice",
-                columns: new[] { "GamerId", "ElectionId" },
-                unique: true,
-                filter: "[GamerId] IS NOT NULL");
+                columns: new[] { "GamerId", "ElectionId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Collections_Name_UserId",
                 table: "Collections",
-                columns: new[] { "Name", "UserId" },
-                unique: true);
+                columns: new[] { "Name", "UserId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Collections_UserId",
@@ -354,14 +374,14 @@ namespace Imaginarium.Persistance.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Gamers_GameId",
                 table: "Gamers",
-                column: "GameId",
-                unique: true);
+                column: "GameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Gamers_UserId",
+                name: "IX_Gamers_UserName",
                 table: "Gamers",
-                column: "UserId",
-                unique: true);
+                column: "UserName",
+                unique: true,
+                filter: "[UserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_LobbyId",
@@ -386,6 +406,12 @@ namespace Imaginarium.Persistance.Migrations
                 column: "GameId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Rounds_Number_GameId",
+                table: "Rounds",
+                columns: new[] { "Number", "GameId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_LobbyId",
                 table: "Users",
                 column: "LobbyId");
@@ -398,9 +424,7 @@ namespace Imaginarium.Persistance.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Vote_GamerId_VotingId",
                 table: "Vote",
-                columns: new[] { "GamerId", "VotingId" },
-                unique: true,
-                filter: "[GamerId] IS NOT NULL");
+                columns: new[] { "GamerId", "VotingId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vote_VotingId",
@@ -412,6 +436,38 @@ namespace Imaginarium.Persistance.Migrations
                 table: "Voting",
                 column: "RoundId",
                 unique: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CardDeck_Cards_CardsId",
+                table: "CardDeck",
+                column: "CardsId",
+                principalTable: "Cards",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CardDeck_Deck_DecksId",
+                table: "CardDeck",
+                column: "DecksId",
+                principalTable: "Deck",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CardHand_Cards_CardsId",
+                table: "CardHand",
+                column: "CardsId",
+                principalTable: "Cards",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CardHand_Hand_HandsId",
+                table: "CardHand",
+                column: "HandsId",
+                principalTable: "Hand",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Choice_Cards_CardId",
@@ -467,22 +523,6 @@ namespace Imaginarium.Persistance.Migrations
                 column: "CollectionId",
                 principalTable: "Collections",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Cards_Deck_DeckId",
-                table: "Cards",
-                column: "DeckId",
-                principalTable: "Deck",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Cards_Hand_HandId",
-                table: "Cards",
-                column: "HandId",
-                principalTable: "Hand",
-                principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
@@ -504,7 +544,19 @@ namespace Imaginarium.Persistance.Migrations
                 name: "Association");
 
             migrationBuilder.DropTable(
+                name: "CardDeck");
+
+            migrationBuilder.DropTable(
+                name: "CardHand");
+
+            migrationBuilder.DropTable(
                 name: "Vote");
+
+            migrationBuilder.DropTable(
+                name: "Deck");
+
+            migrationBuilder.DropTable(
+                name: "Hand");
 
             migrationBuilder.DropTable(
                 name: "Choice");
@@ -519,16 +571,10 @@ namespace Imaginarium.Persistance.Migrations
                 name: "Election");
 
             migrationBuilder.DropTable(
-                name: "Deck");
-
-            migrationBuilder.DropTable(
-                name: "Hand");
+                name: "Gamers");
 
             migrationBuilder.DropTable(
                 name: "Rounds");
-
-            migrationBuilder.DropTable(
-                name: "Gamers");
 
             migrationBuilder.DropTable(
                 name: "Games");

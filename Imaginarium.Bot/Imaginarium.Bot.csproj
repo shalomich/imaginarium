@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Imaginarium.Domain\Imaginarium.Domain.csproj" />
     <ProjectReference Include="..\Imaginarium.Persistance\Imaginarium.Persistance.csproj" />
   </ItemGroup>
 

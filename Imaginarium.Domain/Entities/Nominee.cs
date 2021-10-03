@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Imaginarium.Persistance.Entities
+namespace Imaginarium.Domain.Entities
 {
-    public interface IEntity
+    public class Nominee : Choice
     {
-        public int Id { set; get; }
+        public Association Association { init; get;}
     }
 }
