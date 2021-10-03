@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Imaginarium.Persistance.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20210926171953_InitialMigration")]
+    [Migration("20211003051653_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,7 +21,37 @@ namespace Imaginarium.Persistance.Migrations
                 .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Association", b =>
+            modelBuilder.Entity("CardDeck", b =>
+                {
+                    b.Property<int>("CardsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DecksId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CardsId", "DecksId");
+
+                    b.HasIndex("DecksId");
+
+                    b.ToTable("CardDeck");
+                });
+
+            modelBuilder.Entity("CardHand", b =>
+                {
+                    b.Property<int>("CardsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HandsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CardsId", "HandsId");
+
+                    b.HasIndex("HandsId");
+
+                    b.ToTable("CardHand");
+                });
+
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Association", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,20 +80,14 @@ namespace Imaginarium.Persistance.Migrations
                     b.ToTable("Association");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Card", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Card", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CollectionId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DeckId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("HandId")
+                    b.Property<int?>("CollectionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -74,17 +98,14 @@ namespace Imaginarium.Persistance.Migrations
 
                     b.HasIndex("CollectionId");
 
-                    b.HasIndex("DeckId");
-
-                    b.HasIndex("HandId");
-
                     b.HasIndex("Name", "CollectionId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[CollectionId] IS NOT NULL");
 
                     b.ToTable("Cards");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Choice", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Choice", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,19 +129,16 @@ namespace Imaginarium.Persistance.Migrations
 
                     b.HasIndex("ElectionId");
 
-                    b.HasIndex("CardId", "ElectionId")
-                        .IsUnique();
+                    b.HasIndex("CardId", "ElectionId");
 
-                    b.HasIndex("GamerId", "ElectionId")
-                        .IsUnique()
-                        .HasFilter("[GamerId] IS NOT NULL");
+                    b.HasIndex("GamerId", "ElectionId");
 
                     b.ToTable("Choice");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Choice");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Collection", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Collection", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,13 +156,12 @@ namespace Imaginarium.Persistance.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("Name", "UserId")
-                        .IsUnique();
+                    b.HasIndex("Name", "UserId");
 
                     b.ToTable("Collections");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Deck", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Deck", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -162,7 +179,7 @@ namespace Imaginarium.Persistance.Migrations
                     b.ToTable("Deck");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Election", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Election", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -180,7 +197,7 @@ namespace Imaginarium.Persistance.Migrations
                     b.ToTable("Election");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Game", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Game", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -198,7 +215,7 @@ namespace Imaginarium.Persistance.Migrations
                     b.ToTable("Games");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Gamer", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Gamer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -214,21 +231,21 @@ namespace Imaginarium.Persistance.Migrations
                     b.Property<int>("Score")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameId")
-                        .IsUnique();
+                    b.HasIndex("GameId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserName")
+                        .IsUnique()
+                        .HasFilter("[UserName] IS NOT NULL");
 
                     b.ToTable("Gamers");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Hand", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Hand", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -246,7 +263,7 @@ namespace Imaginarium.Persistance.Migrations
                     b.ToTable("Hand");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Lobby", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Lobby", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -263,7 +280,7 @@ namespace Imaginarium.Persistance.Migrations
                     b.ToTable("Lobbies");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Round", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Round", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -280,10 +297,13 @@ namespace Imaginarium.Persistance.Migrations
 
                     b.HasIndex("GameId");
 
+                    b.HasIndex("Number", "GameId")
+                        .IsUnique();
+
                     b.ToTable("Rounds");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.User", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -295,7 +315,7 @@ namespace Imaginarium.Persistance.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -304,7 +324,7 @@ namespace Imaginarium.Persistance.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Vote", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Vote", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -326,14 +346,12 @@ namespace Imaginarium.Persistance.Migrations
 
                     b.HasIndex("VotingId");
 
-                    b.HasIndex("GamerId", "VotingId")
-                        .IsUnique()
-                        .HasFilter("[GamerId] IS NOT NULL");
+                    b.HasIndex("GamerId", "VotingId");
 
                     b.ToTable("Vote");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Voting", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Voting", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -351,22 +369,52 @@ namespace Imaginarium.Persistance.Migrations
                     b.ToTable("Voting");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Nominee", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Nominee", b =>
                 {
-                    b.HasBaseType("Imaginarium.Persistance.Entities.Choice");
+                    b.HasBaseType("Imaginarium.Domain.Entities.Choice");
 
                     b.HasDiscriminator().HasValue("Nominee");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Association", b =>
+            modelBuilder.Entity("CardDeck", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Nominee", "Nominee")
-                        .WithOne("Association")
-                        .HasForeignKey("Imaginarium.Persistance.Entities.Association", "NomineeId");
+                    b.HasOne("Imaginarium.Domain.Entities.Card", null)
+                        .WithMany()
+                        .HasForeignKey("CardsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Imaginarium.Persistance.Entities.Round", "Round")
+                    b.HasOne("Imaginarium.Domain.Entities.Deck", null)
+                        .WithMany()
+                        .HasForeignKey("DecksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CardHand", b =>
+                {
+                    b.HasOne("Imaginarium.Domain.Entities.Card", null)
+                        .WithMany()
+                        .HasForeignKey("CardsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Imaginarium.Domain.Entities.Hand", null)
+                        .WithMany()
+                        .HasForeignKey("HandsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Association", b =>
+                {
+                    b.HasOne("Imaginarium.Domain.Entities.Nominee", "Nominee")
                         .WithOne("Association")
-                        .HasForeignKey("Imaginarium.Persistance.Entities.Association", "RoundId")
+                        .HasForeignKey("Imaginarium.Domain.Entities.Association", "NomineeId");
+
+                    b.HasOne("Imaginarium.Domain.Entities.Round", "Round")
+                        .WithOne("Association")
+                        .HasForeignKey("Imaginarium.Domain.Entities.Association", "RoundId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -375,40 +423,30 @@ namespace Imaginarium.Persistance.Migrations
                     b.Navigation("Round");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Card", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Card", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Collection", "Collection")
+                    b.HasOne("Imaginarium.Domain.Entities.Collection", "Collection")
                         .WithMany("Cards")
-                        .HasForeignKey("CollectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Imaginarium.Persistance.Entities.Deck", null)
-                        .WithMany("Cards")
-                        .HasForeignKey("DeckId");
-
-                    b.HasOne("Imaginarium.Persistance.Entities.Hand", null)
-                        .WithMany("Cards")
-                        .HasForeignKey("HandId");
+                        .HasForeignKey("CollectionId");
 
                     b.Navigation("Collection");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Choice", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Choice", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Card", "Card")
+                    b.HasOne("Imaginarium.Domain.Entities.Card", "Card")
                         .WithMany()
                         .HasForeignKey("CardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Imaginarium.Persistance.Entities.Election", "Election")
+                    b.HasOne("Imaginarium.Domain.Entities.Election", "Election")
                         .WithMany("Choices")
                         .HasForeignKey("ElectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Imaginarium.Persistance.Entities.Gamer", "Gamer")
+                    b.HasOne("Imaginarium.Domain.Entities.Gamer", "Gamer")
                         .WithMany()
                         .HasForeignKey("GamerId");
 
@@ -419,9 +457,9 @@ namespace Imaginarium.Persistance.Migrations
                     b.Navigation("Gamer");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Collection", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Collection", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.User", "User")
+                    b.HasOne("Imaginarium.Domain.Entities.User", "User")
                         .WithMany("Collections")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -430,81 +468,81 @@ namespace Imaginarium.Persistance.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Deck", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Deck", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Game", "Game")
+                    b.HasOne("Imaginarium.Domain.Entities.Game", "Game")
                         .WithOne("Deck")
-                        .HasForeignKey("Imaginarium.Persistance.Entities.Deck", "GameId")
+                        .HasForeignKey("Imaginarium.Domain.Entities.Deck", "GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Game");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Election", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Election", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Round", "Round")
+                    b.HasOne("Imaginarium.Domain.Entities.Round", "Round")
                         .WithOne("Election")
-                        .HasForeignKey("Imaginarium.Persistance.Entities.Election", "RoundId")
+                        .HasForeignKey("Imaginarium.Domain.Entities.Election", "RoundId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Round");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Game", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Game", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Lobby", "Lobby")
+                    b.HasOne("Imaginarium.Domain.Entities.Lobby", "Lobby")
                         .WithOne("Game")
-                        .HasForeignKey("Imaginarium.Persistance.Entities.Game", "LobbyId")
+                        .HasForeignKey("Imaginarium.Domain.Entities.Game", "LobbyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Lobby");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Gamer", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Gamer", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Game", "Game")
+                    b.HasOne("Imaginarium.Domain.Entities.Game", "Game")
                         .WithMany("Gamers")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Imaginarium.Persistance.Entities.User", "User")
+                    b.HasOne("Imaginarium.Domain.Entities.User", "User")
                         .WithOne("Gamer")
-                        .HasForeignKey("Imaginarium.Persistance.Entities.Gamer", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Imaginarium.Domain.Entities.Gamer", "UserName")
+                        .HasPrincipalKey("Imaginarium.Domain.Entities.User", "Name")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Game");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Hand", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Hand", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Gamer", "Gamer")
+                    b.HasOne("Imaginarium.Domain.Entities.Gamer", "Gamer")
                         .WithOne("Hand")
-                        .HasForeignKey("Imaginarium.Persistance.Entities.Hand", "GamerId")
+                        .HasForeignKey("Imaginarium.Domain.Entities.Hand", "GamerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Gamer");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Lobby", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Lobby", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Collection", "Collection")
-                        .WithMany("Lobbies")
+                    b.HasOne("Imaginarium.Domain.Entities.Collection", "Collection")
+                        .WithMany()
                         .HasForeignKey("CollectionId");
 
                     b.Navigation("Collection");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Round", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Round", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Game", "Game")
+                    b.HasOne("Imaginarium.Domain.Entities.Game", "Game")
                         .WithMany("Rounds")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -513,26 +551,26 @@ namespace Imaginarium.Persistance.Migrations
                     b.Navigation("Game");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.User", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.User", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Lobby", "Lobby")
+                    b.HasOne("Imaginarium.Domain.Entities.Lobby", "Lobby")
                         .WithMany("Users")
                         .HasForeignKey("LobbyId");
 
                     b.Navigation("Lobby");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Vote", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Vote", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Choice", "Choice")
+                    b.HasOne("Imaginarium.Domain.Entities.Choice", "Choice")
                         .WithMany()
                         .HasForeignKey("ChoiceId");
 
-                    b.HasOne("Imaginarium.Persistance.Entities.Gamer", "Gamer")
+                    b.HasOne("Imaginarium.Domain.Entities.Gamer", "Gamer")
                         .WithMany()
                         .HasForeignKey("GamerId");
 
-                    b.HasOne("Imaginarium.Persistance.Entities.Voting", "Voting")
+                    b.HasOne("Imaginarium.Domain.Entities.Voting", "Voting")
                         .WithMany("Votes")
                         .HasForeignKey("VotingId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -545,35 +583,28 @@ namespace Imaginarium.Persistance.Migrations
                     b.Navigation("Voting");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Voting", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Voting", b =>
                 {
-                    b.HasOne("Imaginarium.Persistance.Entities.Round", "Round")
+                    b.HasOne("Imaginarium.Domain.Entities.Round", "Round")
                         .WithOne("Voting")
-                        .HasForeignKey("Imaginarium.Persistance.Entities.Voting", "RoundId")
+                        .HasForeignKey("Imaginarium.Domain.Entities.Voting", "RoundId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Round");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Collection", b =>
-                {
-                    b.Navigation("Cards");
-
-                    b.Navigation("Lobbies");
-                });
-
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Deck", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Collection", b =>
                 {
                     b.Navigation("Cards");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Election", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Election", b =>
                 {
                     b.Navigation("Choices");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Game", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Game", b =>
                 {
                     b.Navigation("Deck");
 
@@ -582,24 +613,19 @@ namespace Imaginarium.Persistance.Migrations
                     b.Navigation("Rounds");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Gamer", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Gamer", b =>
                 {
                     b.Navigation("Hand");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Hand", b =>
-                {
-                    b.Navigation("Cards");
-                });
-
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Lobby", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Lobby", b =>
                 {
                     b.Navigation("Game");
 
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Round", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Round", b =>
                 {
                     b.Navigation("Association");
 
@@ -608,19 +634,19 @@ namespace Imaginarium.Persistance.Migrations
                     b.Navigation("Voting");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.User", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.User", b =>
                 {
                     b.Navigation("Collections");
 
                     b.Navigation("Gamer");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Voting", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Voting", b =>
                 {
                     b.Navigation("Votes");
                 });
 
-            modelBuilder.Entity("Imaginarium.Persistance.Entities.Nominee", b =>
+            modelBuilder.Entity("Imaginarium.Domain.Entities.Nominee", b =>
                 {
                     b.Navigation("Association");
                 });
