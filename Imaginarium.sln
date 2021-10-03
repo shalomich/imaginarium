@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imaginarium.Bot", "Imaginarium.Bot\Imaginarium.Bot.csproj", "{7BE238CA-E29C-4E2E-B0A8-6C24EEFDEC72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imaginarium.Persistance", "Imaginarium.Persistance\Imaginarium.Persistance.csproj", "{DF6C1345-04C6-45E4-8A4A-D304943E6E16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Imaginarium.Persistance", "Imaginarium.Persistance\Imaginarium.Persistance.csproj", "{DF6C1345-04C6-45E4-8A4A-D304943E6E16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imaginarium.Domain", "Imaginarium.Domain\Imaginarium.Domain.csproj", "{3909AFEE-4FBF-4191-B4B6-98CF62D8F61F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{DF6C1345-04C6-45E4-8A4A-D304943E6E16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF6C1345-04C6-45E4-8A4A-D304943E6E16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF6C1345-04C6-45E4-8A4A-D304943E6E16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3909AFEE-4FBF-4191-B4B6-98CF62D8F61F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3909AFEE-4FBF-4191-B4B6-98CF62D8F61F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3909AFEE-4FBF-4191-B4B6-98CF62D8F61F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3909AFEE-4FBF-4191-B4B6-98CF62D8F61F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
